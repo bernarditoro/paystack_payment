@@ -1,0 +1,30 @@
+{% extends 'paystack/base.html' %}
+
+{% block content %}
+<h5>Make payment for NGN {{ payment.amount }}</h5>
+<hr>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<button id="pay-button" onclick="payWithPayStack()">Make Payment</button>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function payWithPayStack() {
+        let currency = "NGN";
+        let plan = "";
+        let ref = "{{ payment.ref }}";
+        let obj = {
+            key: "{{ paystack_public_key }}",
+            email: "{{ payment.email }}",
+            amount: "{{ payment.amount_value }}",
+            ref: ref,
+            callback: function(response) {
+                window.location.href = "{% url 'paystack:verify_payment' payment.ref %}";
+            }
+        }
+
+        var handler = PaystackPop.setup(obj);
+        handler.openIframe();
+    }
+</script>
+{% endblock %}
