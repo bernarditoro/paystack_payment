@@ -1,4 +1,4 @@
-{% extends 'paystack/base.html' %}
+{% extends 'payments/base.html' %}
 
 {% block content %}
 <h5>Make payment for NGN {{ payment.amount }}</h5>
@@ -12,14 +12,14 @@
     function payWithPayStack() {
         let currency = "NGN";
         let plan = "";
-        let ref = "{{ payment.ref }}";
+        let ref = "{{ ref }}";
         let obj = {
             key: "{{ paystack_public_key }}",
-            email: "{{ payment.email }}",
-            amount: "{{ payment.amount_value }}",
+            email: "{{ email }}",
+            amount: "{{ amount }}",
             ref: ref,
             callback: function(response) {
-                window.location.href = "{% url 'paystack:verify_payment' payment.ref %}";
+                window.location.href = "{% url 'verify_payment' ref %}";
             }
         }
 

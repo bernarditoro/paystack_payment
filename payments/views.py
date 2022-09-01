@@ -21,13 +21,22 @@ def initiate_payment(request):
             cd = payment_form.cleaned_data
 
             # Create session values from the form data and generate ref value
+            ref = secrets.token_urlsafe(50)
+
             request.session["amount"] = cd["amount"]
             request.session["email"] = cd["email"]
-            request.session["ref"] = secrets.token_urlsafe(50)
+            request.session["ref"] = ref
 
-            return render(request, "paystack/make_payment.html", {"paystack_public_key": settings.PAYSTACK_PUBLIC_KEY})
+            ctx = {
+                "paystack_public_key": settings.PAYSTACK_PUBLIC_KEY,
+                "ref": ref,
+                "amount": cd["amount"],
+                "email": cd["email"],
+            }
 
-    return render(request, "paystack/initiate_payment.html", {"payment_form": payment_form})
+            return render(request, "payments/make_payment.html", ctx)
+
+    return render(request, "payments/initiate_payment.html", {"payment_form": payment_form})
 
 
 def verify_payment(request, ref):
@@ -49,4 +58,4 @@ def verify_payment(request, ref):
     else:
         messages.error(request, 'Your payment could not be verified')
 
-    return redirect(request.META["HTTP_REFERER"])
+    return redirect("initiate_payment")
